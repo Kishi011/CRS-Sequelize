@@ -28,7 +28,7 @@ const Livro = sequelize.define(
 );
 
 Livro.belongsTo(Categoria, {
-  as: 'usuario',
+  as: 'categoria',
 
   // define a ação padrão dos triggers de delete e update
   onDelete: 'NO ACTION',

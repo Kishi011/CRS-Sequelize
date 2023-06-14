@@ -20,8 +20,9 @@ const EmprestimoLivro = sequelize.define(
   }
 );
 
-EmprestimoLivro.belongsTo(Livro, {
-  as: 'livro',
+Livro.belongsToMany(Emprestimo, {
+  through: EmprestimoLivro,
+  as: 'emprestimos',
 
   // define a ação padrão dos triggers de delete e update
   onDelete: 'NO ACTION',
@@ -34,13 +35,14 @@ EmprestimoLivro.belongsTo(Livro, {
     // field ==> o nome que ficará no banco
     field: 'id_livro',
     allowNull: false,
-    unique: true
   }
 });
 
-EmprestimoLivro.belongsTo(Emprestimo, {
-  as: 'emprestimo',
+Emprestimo.belongsToMany(Livro, {
+  through: EmprestimoLivro,
+  as: 'livros',
 
+  
   // define a ação padrão dos triggers de delete e update
   onDelete: 'NO ACTION',
   onUpdate: 'NO ACTION',
@@ -52,7 +54,6 @@ EmprestimoLivro.belongsTo(Emprestimo, {
     // field ==> o nome que ficará no banco
     field: 'id_emprestimo',
     allowNull: false,
-    unique: true
   }
 });
 
