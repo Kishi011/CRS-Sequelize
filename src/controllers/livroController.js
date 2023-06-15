@@ -171,7 +171,7 @@ const getLivrosDisponiveis = async (_, res) => {
   }
 }
 
-const getLivrosStatus = async (req, res) => {
+const getLivroStatus = async (req, res) => {
   try {
     let id = req.params.id ? req.params.id.toString().replace(/\D/g, '') : null;
     
@@ -224,4 +224,4 @@ const getLivrosStatus = async (req, res) => {
   }
 }
 
-export default { get, persist, destroy, getLivrosDisponiveis, getLivrosStatus };
+export default { get, persist, destroy, getLivrosDisponiveis, getLivroStatus };
