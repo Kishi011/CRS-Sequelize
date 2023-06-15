@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 import EmprestimoLivro from "../models/EmprestimoLivro";
 import Livro from "../models/Livro"
 
@@ -145,9 +146,12 @@ const getLivrosDisponiveis = async (_, res) => {
     let livros = await Livro.findAll();
     let livrosDisponiveis = [];
     for(let livro of livros) {
-      let emprestimo = await livro.getEmprestimos();
-      console.log(emprestimo);
-      if(!emprestimo.length || emprestimo.devolucao) {
+      let emprestimo = await livro.getEmprestimos({
+        where: {
+          [Op.not]: [{devolucao: null}]
+        }
+      });
+      if(!emprestimo.length) {
         livrosDisponiveis.push(livro);
       }
     }
@@ -167,4 +171,21 @@ const getLivrosDisponiveis = async (_, res) => {
   }
 }
 
-export default { get, persist, destroy, getLivrosDisponiveis };
+const getLivrosStatus = async (_, res) => {
+  try {
+    let status = await Livro.findAll();
+    status = status.map(dado => {
+      let disponivel = dado.toJSON();
+      // disponivel.status = disponivel.getEmprestimos() ? 'não disponível' : 'disponível';
+      console.log(disponivel);
+    });
+  } catch (error) {
+    return res.status(500).send({
+      type: 'error',
+      message: `Ops! Ocorreu um erro`,
+      error: error.message
+    });
+  }
+}
+
+export default { get, persist, destroy, getLivrosDisponiveis, getLivrosStatus };
