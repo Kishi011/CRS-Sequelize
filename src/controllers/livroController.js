@@ -171,14 +171,50 @@ const getLivrosDisponiveis = async (_, res) => {
   }
 }
 
-const getLivrosStatus = async (_, res) => {
+const getLivrosStatus = async (req, res) => {
   try {
-    let status = await Livro.findAll();
-    status = status.map(dado => {
-      let disponivel = dado.toJSON();
-      // disponivel.status = disponivel.getEmprestimos() ? 'não disponível' : 'disponível';
-      console.log(disponivel);
+    let id = req.params.id ? req.params.id.toString().replace(/\D/g, '') : null;
+    
+    if(!id) {
+      return res.status(500).send({
+        type: 'error',
+        message: `Informe um id`,
+        data: []
+      });
+    }
+
+    let livro = await Livro.findOne({ where: { id } });
+
+    if(!livro) {
+      return res.status(404).send({
+        type: 'error',
+        message: `Nunhum registro com id: ${id}`,
+        data: []
+      });
+    }
+    
+    let emprestimo = await livro.getEmprestimos({ 
+      where:{
+        devolucao: {
+          [Op.is]: null
+        }
+      } 
     });
+
+    livro = livro.toJSON();
+
+    if(!emprestimo.length) {
+      livro.status = 'disponível'
+    } else {
+      livro.status = 'não disponível'
+    }
+
+    return res.status(200).send({
+      type: 'success',
+      message: `Registros carregados com sucesso!`,
+      data: livro
+    });
+
   } catch (error) {
     return res.status(500).send({
       type: 'error',
